@@ -45,9 +45,6 @@ export class DateUtils {
     d?.setHours(0, 0, 0, 0);
     const day = (d || new Date()).getDay();
     let res = true;
-    console.log(d);
-    console.log(new Date(2026, 1, 6));
-    console.log(isBefore(d as Date, new Date(2026, 1, 6)));
     // Monday closed
     if (day === 1) {
       res = false;
