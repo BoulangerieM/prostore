@@ -1,5 +1,5 @@
 import { ClosingDay, ClosingDayForHumans } from '@models/closingDay';
-import { getHours, startOfYesterday, isBefore, isAfter } from 'date-fns';
+import { getHours, isAfter, isBefore, startOfYesterday } from 'date-fns';
 
 // TODO: refacto toutes avec date fns tant qu'à faire vu que j'utilise la lib pour le formattage en français
 
@@ -44,18 +44,17 @@ export class DateUtils {
   ): boolean => {
     d?.setHours(0, 0, 0, 0);
     const day = (d || new Date()).getDay();
-    console.log(day);
     let res = true;
-    // FIXME remove dirty temporary code
-    const fifthOfJanuary = new Date(
-      'Mon Sep 15 2025 00:00:00 GMT+0100 (Central European Standard Time'
-    );
-    if (isBefore(d as Date, fifthOfJanuary)) {
-      res = true;
-    }
-    // Monday open
-    else if (day === 1) {
+    console.log(d);
+    console.log(new Date(2026, 1, 6));
+    console.log(isBefore(d as Date, new Date(2026, 1, 6)));
+    // Monday closed
+    if (day === 1) {
       res = false;
+    }
+    // A SUPPRIMER
+    if (isBefore(d as Date, new Date(2026, 0, 6))) {
+      res = true;
     }
     // get and inject specific closed day from closing days form
     if (
@@ -68,7 +67,6 @@ export class DateUtils {
     ) {
       res = false;
     }
-
     return res;
   };
 
@@ -77,11 +75,8 @@ export class DateUtils {
     minimalDay.setHours(0, 0, 0, 0);
     // Set à dans deux jours, délai minimum de livraison
     minimalDay.setDate(new Date().getDate() + 2);
-    //FIXME: ajout de condition à la con pour palier au changement de règle de gestion
-    const fifthOfJanuary = new Date(
-      'Mon Sep 15 2025 00:00:00 GMT+0100 (Central European Standard Time'
-    );
-    if (isAfter(minimalDay as Date, fifthOfJanuary)) {
+    // CONDITION A SUPPRIMER
+    if (isAfter(minimalDay as Date, new Date(2026, 0, 6))) {
       // Si on est dimanche, on tombe le mardi, mais le lundi n'est pas ouvré donc on rajoute un jour
       if (minimalDay.getDay() === 2) {
         minimalDay.setDate(minimalDay.getDate() + 1);
@@ -91,7 +86,6 @@ export class DateUtils {
         minimalDay.setDate(minimalDay.getDate() + 1);
       }
     }
-
     // Si un des jours de fermeture est prévu avant le jour minimum de livraison, on rajoute un jour
     closingDays.forEach((closedDay) => {
       if (closedDay.startingDate.seconds * 1000 <= minimalDay.getTime()) {
