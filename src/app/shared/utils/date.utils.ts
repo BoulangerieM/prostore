@@ -45,9 +45,10 @@ export class DateUtils {
     d?.setHours(0, 0, 0, 0);
     let res = true;
     // Monday closed
-    /*if (day === 1) {
+    const day = (d || new Date()).getDay();
+    if (day === 1) {
       res = false;
-    }*/
+    }
     // get and inject specific closed day from closing days form
     if (
       d &&
